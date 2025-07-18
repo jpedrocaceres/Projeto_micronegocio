@@ -12,6 +12,8 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, type AuthError } from "firebase/auth"; // Import Firebase Auth functions
+import { app } from "./firebaseConfig"; // Import the initialized Firebase app
 
 const LoginScreen = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
@@ -27,8 +29,13 @@ const LoginScreen = () => {
     password: "",
     remember: false,
   });
+  
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null); // State to hold Firebase Auth errors
+
+    // Initialize Firebase Auth
+    const auth = getAuth(app);
 
   // Language translations
   const translations = {
@@ -145,19 +152,79 @@ const LoginScreen = () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setAuthError(null); // Clear previous errors
 
     // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Simulate success
-      alert(t.success);
+      // Sign in with email and password
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      alert(t.success); // Or navigate to a new page
     } catch (error) {
-      alert(t.error);
+      const firebaseError = error as AuthError;
+      let errorMessage = t.error; // Default error message
+      
+
+      // Provide more specific error messages based on Firebase Auth error codes
+      switch (firebaseError.code) {
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+          errorMessage = "Invalid email or password.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Invalid email format.";
+          break;
+        case "auth/user-disabled":
+          errorMessage = "Your account has been disabled.";
+          break;
+        default:
+          errorMessage = firebaseError.message; // Use Firebase error message for unhandled errors
+      }
+      setAuthError(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
+
+
+  const handleSignUp = async () => {
+    if (!validateForm()) return;
+
+
+    setIsLoading(true);
+    setAuthError(null); // Clear previous errors
+
+
+    try {
+      await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      alert(t.signupSuccess); // Or navigate to a new page
+    } catch (error) {
+      const firebaseError = error as AuthError;
+      let errorMessage = t.signupError; // Default signup error message
+
+
+      switch (firebaseError.code) {
+        case "auth/email-already-in-use":
+          errorMessage = "Email address is already in use.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Invalid email format.";
+          break;
+        case "auth/weak-password":
+          errorMessage = "Password should be at least 6 characters.";
+          break;
+        default:
+          errorMessage = firebaseError.message; // Use Firebase error message for unhandled errors
+      }
+
+
+      setAuthError(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
