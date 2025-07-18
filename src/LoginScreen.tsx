@@ -29,13 +29,13 @@ const LoginScreen = () => {
     password: "",
     remember: false,
   });
-  
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null); // State to hold Firebase Auth errors
 
-    // Initialize Firebase Auth
-    const auth = getAuth(app);
+  // Initialize Firebase Auth
+  const auth = getAuth(app);
 
   // Language translations
   const translations = {
@@ -154,7 +154,7 @@ const LoginScreen = () => {
     setIsLoading(true);
     setAuthError(null); // Clear previous errors
 
-    // Simulate API call
+
     try {
       // Sign in with email and password
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
@@ -162,7 +162,7 @@ const LoginScreen = () => {
     } catch (error) {
       const firebaseError = error as AuthError;
       let errorMessage = t.error; // Default error message
-      
+
 
       // Provide more specific error messages based on Firebase Auth error codes
       switch (firebaseError.code) {
@@ -362,144 +362,144 @@ const LoginScreen = () => {
             </div>
 
             {/* Form */}
-            <div className="px-8 pb-8 relative">
-              <div className="space-y-6">
-                {/* Email Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t.email}
-                  </label>
-                  <div className="relative">
-                    <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
-                        errors.email
-                          ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                          : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
-                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                {/* Password Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t.password}
-                  </label>
-                  <div className="relative">
-                    <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
-                        errors.password
-                          ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                          : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
-                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
-                    >
-                      {showPassword ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.password}
-                    </p>
-                  )}
-                </div>
-
-                {/* Remember Me & Forgot Password */}
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="remember"
-                      checked={formData.remember}
-                      onChange={handleInputChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                      {t.remember}
-                    </span>
-                  </label>
-                  <button
-                    type="button"
-                    className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
-                  >
-                    {t.forgot}
-                  </button>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Loading...</span>
+            <form onSubmit={handleSubmit}>
+              <div className="px-8 pb-8 relative">
+                <div className="space-y-6">
+                  {/* Email Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.email}
+                    </label>
+                    <div className="relative">
+                      <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${errors.email
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                            : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
+                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        placeholder="you@example.com"
+                      />
                     </div>
-                  ) : (
-                    t.signin
-                  )}
-                </button>
-
-                {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                      {t.or}
-                    </span>
-                  </div>
-                </div>
 
-                {/* Social Login */}
-                <div className="grid grid-cols-2 gap-3">
-                  {socialProviders.map((provider) => (
+                  {/* Password Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.password}
+                    </label>
+                    <div className="relative">
+                      <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-12 py-3 rounded-lg border ${errors.password
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                            : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
+                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                      >
+                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
+                    {errors.password && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        {errors.password}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Remember Me & Forgot Password */}
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="remember"
+                        checked={formData.remember}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                        {t.remember}
+                      </span>
+                    </label>
                     <button
-                      key={provider.name}
                       type="button"
-                      className={`flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 ${provider.color}`}
+                      className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
                     >
-                      <provider.icon className="w-5 h-5" />
+                      {t.forgot}
                     </button>
-                  ))}
-                </div>
+                  </div>
 
-                {/* Sign Up Link */}
-                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  {t.noAccount}{" "}
+                  {/* Submit Button */}
                   <button
-                    type="button"
-                    className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
                   >
-                    {t.signup}
+                    {isLoading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      t.signin
+                    )}
                   </button>
-                </p>
+
+                  {/* Divider */}
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                        {t.or}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Social Login */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {socialProviders.map((provider) => (
+                      <button
+                        key={provider.name}
+                        type="button"
+                        className={`flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 ${provider.color}`}
+                      >
+                        <provider.icon className="w-5 h-5" />
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Sign Up Link */}
+                  <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                    {t.noAccount}{" "}
+                    <button
+                      type="button"
+                      className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
+                    >
+                      {t.signup}
+                    </button>
+                  </p>
+                </div>
               </div>
-            </div>
+              </form>
           </div>
         </div>
       </div>
