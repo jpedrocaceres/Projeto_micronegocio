@@ -361,7 +361,7 @@ const LoginScreen = () => {
               </p>
             </div>
 
-            {/* Form */}
+            {/* formulario de envio */}
             <form onSubmit={handleSubmit}>
               <div className="px-8 pb-8 relative">
                 <div className="space-y-6">
