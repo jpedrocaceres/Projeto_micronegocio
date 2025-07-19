@@ -446,6 +446,11 @@ const LoginScreen = () => {
                     </button>
                   </div>
 
+                    {/* Auth Error Message */}
+                    {authError && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">{authError}</p>
+                    )}
+
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -488,7 +493,7 @@ const LoginScreen = () => {
                   </div>
 
                   {/* Sign Up Link */}
-                  <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  <p onClick={handleSignUp} className="text-center text-sm text-gray-600 dark:text-gray-400">
                     {t.noAccount}{" "}
                     <button
                       type="button"
@@ -497,6 +502,7 @@ const LoginScreen = () => {
                       {t.signup}
                     </button>
                   </p>
+                  
                 </div>
               </div>
               </form>
