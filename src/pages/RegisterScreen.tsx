@@ -19,6 +19,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { useNavigate } from "react-router-dom";
+import validator from "validator";
 
 type TranslationKeys =
   | 'welcome'
@@ -193,7 +194,7 @@ const RegisterScreen = () => {
 
     if (!formData.name.trim()) newErrors.name = tWithFallback('nameRequired');
     if (!formData.email) newErrors.email = tWithFallback('emailRequired');
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = tWithFallback('invalidEmail');
+    else if (!validator.isEmail(formData.email)) newErrors.email = tWithFallback('invalidEmail');
     if (!formData.phone) newErrors.phone = tWithFallback('phoneRequired');
     if (!formData.password) newErrors.password = tWithFallback('passwordRequired');
     if (!formData.confirmPassword) newErrors.confirmPassword = tWithFallback('confirmPasswordRequired');

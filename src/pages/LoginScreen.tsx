@@ -15,6 +15,7 @@ import {
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, type AuthError } from "firebase/auth"; // Import Firebase Auth functions
 import { auth } from "../config/firebaseConfig";
+import validator from "validator";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
@@ -137,7 +138,7 @@ const LoginScreen = () => {
 
     if (!formData.email) {
       newErrors.email = t.emailRequired;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!validator.isEmail(formData.email)) {
       newErrors.email = t.invalidEmail;
     }
 
