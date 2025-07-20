@@ -10,103 +10,62 @@ import {
   FiUser,
   FiChevronDown,
   FiCheck,
+  FiPhone,
+  FiScissors
 } from "react-icons/fi";
-import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, type AuthError } from "firebase/auth"; // Import Firebase Auth functions
-import { app } from "./firebaseConfig"; // Import the initialized Firebase app
+// import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { app, db } from "./firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt"); // specify possible languages
+  const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt");
   const [showLanguageMenu, setShowLanguageMenu] = useState<boolean>(false);
-  const [formData, setFormData] = useState<{
-    email: string;
-    password: string;
-    remember: boolean;
-  }>({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
-    remember: false,
+    confirmPassword: "",
+    name: "",
+    phone: "",
+    userType: "customer" // 'customer' or 'barber'
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [authError, setAuthError] = useState<string | null>(null); // State to hold Firebase Auth errors
-
-  // Initialize Firebase Auth
-  const auth = getAuth(app);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Language translations
   const translations = {
     en: {
-      welcome: "Welcome Back",
-      subtitle: "Sign in to your account to continue",
+      welcome: "Create Your Account",
+      subtitle: "Set up your account to get started",
+      name: "Full Name",
       email: "Email Address",
+      phone: "Phone Number",
       password: "Password",
-      remember: "Remember me",
-      forgot: "Forgot password?",
-      signin: "Sign In",
-      signup: "Sign Up",
-      noAccount: "Don't have an account?",
-      or: "or continue with",
+      confirmPassword: "Confirm Password",
+      userType: "I am a",
+      customer: "Customer",
+      barber: "Barber",
+      register: "Register",
+      haveAccount: "Already have an account?",
+      login: "Login",
+      nameRequired: "Name is required",
       emailRequired: "Email is required",
+      phoneRequired: "Phone is required",
       passwordRequired: "Password is required",
+      confirmPasswordRequired: "Please confirm your password",
+      passwordsDontMatch: "Passwords don't match",
       invalidEmail: "Please enter a valid email",
-      success: "Welcome! Login successful",
-      error: "Invalid credentials. Please try again.",
+      invalidPhone: "Please enter a valid phone number",
+      success: "Account created successfully!",
+      error: "Registration failed. Please try again."
     },
-    es: {
-      welcome: "Bienvenido de Vuelta",
-      subtitle: "Inicia sesión en tu cuenta para continuar",
-      email: "Dirección de Correo",
-      password: "Contraseña",
-      remember: "Recordarme",
-      forgot: "¿Olvidaste tu contraseña?",
-      signin: "Iniciar Sesión",
-      signup: "Registrarse",
-      noAccount: "¿No tienes cuenta?",
-      or: "o continúa con",
-      emailRequired: "El correo es requerido",
-      passwordRequired: "La contraseña es requerida",
-      invalidEmail: "Por favor ingresa un correo válido",
-      success: "¡Bienvenido! Inicio de sesión exitoso",
-      error: "Credenciales inválidas. Intenta de nuevo.",
-    },
-    pt: {
-      welcome: "Bem-vindo de Volta",
-      subtitle: "Entre na sua conta para continuar",
-      email: "Endereço de Email",
-      password: "Senha",
-      remember: "Lembrar-me",
-      forgot: "Esqueceu a senha?",
-      signin: "Entrar",
-      signup: "Cadastrar",
-      noAccount: "Não tem uma conta?",
-      or: "ou continue com",
-      emailRequired: "Email é obrigatório",
-      passwordRequired: "Senha é obrigatória",
-      invalidEmail: "Por favor insira um email válido",
-      success: "Bem-vindo! Login realizado com sucesso",
-      error: "Credenciais inválidas. Tente novamente.",
-    },
-    fr: {
-      welcome: "Bon Retour",
-      subtitle: "Connectez-vous à votre compte pour continuer",
-      email: "Adresse Email",
-      password: "Mot de Passe",
-      remember: "Se souvenir de moi",
-      forgot: "Mot de passe oublié?",
-      signin: "Se Connecter",
-      signup: "S'inscrire",
-      noAccount: "Vous n'avez pas de compte?",
-      or: "ou continuer avec",
-      emailRequired: "L'email est requis",
-      passwordRequired: "Le mot de passe est requis",
-      invalidEmail: "Veuillez saisir un email valide",
-      success: "Bienvenue! Connexion réussie",
-      error: "Identifiants invalides. Veuillez réessayer.",
-    },
+    // Add other languages similarly...
   };
 
   const languages = [
@@ -126,148 +85,86 @@ const LoginScreen = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
-    document.documentElement.lang = language;
-  }, [darkMode, language]);
+  }, [darkMode]);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.email) {
-      newErrors.email = t.emailRequired;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = t.invalidEmail;
-    }
-
-    if (!formData.password) {
-      newErrors.password = t.passwordRequired;
+    if (!formData.name.trim()) newErrors.name = t.nameRequired;
+    if (!formData.email) newErrors.email = t.emailRequired;
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = t.invalidEmail;
+    if (!formData.phone) newErrors.phone = t.phoneRequired;
+    if (!formData.password) newErrors.password = t.passwordRequired;
+    if (!formData.confirmPassword) newErrors.confirmPassword = t.confirmPasswordRequired;
+    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = t.passwordsDontMatch;
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setAuthError(null); // Clear previous errors
-
-
-    try {
-      // Sign in with email and password
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      alert(t.success); // Or navigate to a new page
-    } catch (error) {
-      const firebaseError = error as AuthError;
-      let errorMessage = t.error; // Default error message
-
-
-      // Provide more specific error messages based on Firebase Auth error codes
-      switch (firebaseError.code) {
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-          errorMessage = "Invalid email or password.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email format.";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "Your account has been disabled.";
-          break;
-        default:
-          errorMessage = firebaseError.message; // Use Firebase error message for unhandled errors
-      }
-      setAuthError(errorMessage);
-      alert(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-
-  const handleSignUp = async () => {
-    if (!validateForm()) return;
-
-
-    setIsLoading(true);
-    setAuthError(null); // Clear previous errors
-
+    setAuthError(null);
 
     try {
-      await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      alert(t.signupSuccess); // Or navigate to a new page
-    } catch (error) {
-      const firebaseError = error as AuthError;
-      let errorMessage = t.signupError; // Default signup error message
+      // 1. Create auth account
+      const auth = getAuth(app);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
 
+      // 2. Save user profile to Firestore
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        userType: formData.userType,
+        createdAt: new Date(),
+      });
 
-      switch (firebaseError.code) {
+      // 3. Redirect based on user type
+      alert(t.success);
+      navigate(formData.userType === "barber" ? "/barber-dashboard" : "/appointments");
+    } catch (error: any) {
+      let errorMessage = t.error;
+      
+      switch (error.code) {
         case "auth/email-already-in-use":
-          errorMessage = "Email address is already in use.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email format.";
+          errorMessage = "Email already in use";
           break;
         case "auth/weak-password":
-          errorMessage = "Password should be at least 6 characters.";
+          errorMessage = "Password should be at least 6 characters";
           break;
         default:
-          errorMessage = firebaseError.message; // Use Firebase error message for unhandled errors
+          errorMessage = error.message;
       }
-
-
+      
       setAuthError(errorMessage);
-      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData(prev => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "radio" ? (e.target as HTMLInputElement).value : value
     }));
 
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
-
-  const socialProviders = [
-    {
-      name: "Google",
-      icon: FaGoogle,
-      color:
-        "hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 dark:hover:border-red-700",
-    },
-    {
-      name: "Facebook",
-      icon: FaFacebook,
-      color:
-        "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-700",
-    },
-    {
-      name: "Apple",
-      icon: FaApple,
-      color:
-        "hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600",
-    },
-    {
-      name: "GitHub",
-      icon: FaGithub,
-      color:
-        "hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
@@ -346,7 +243,6 @@ const LoginScreen = () => {
       {/* Main Content */}
       <div className="z-10 flex items-center justify-center min-h-[calc(100vh-120px)] px-4">
         <div className="w-full max-w-md">
-          {/* Login Card */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden backdrop-blur-sm bg-opacity-80 dark:bg-opacity-80">
             {/* Header */}
             <div className="px-8 pt-8 pb-6 text-center">
@@ -361,10 +257,36 @@ const LoginScreen = () => {
               </p>
             </div>
 
-            {/* formulario de envio */}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleRegister}>
               <div className="px-8 pb-8 relative">
-                <div className="space-y-6">
+                <div className="space-y-4">
+                  {/* Name Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.name}
+                    </label>
+                    <div className="relative">
+                      <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                          errors.name
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                            : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    {errors.name && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        {errors.name}
+                      </p>
+                    )}
+                  </div>
+
                   {/* Email Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -377,10 +299,11 @@ const LoginScreen = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${errors.email
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                          errors.email
                             ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                             : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
-                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
                         placeholder="you@example.com"
                       />
                     </div>
@@ -389,6 +312,66 @@ const LoginScreen = () => {
                         {errors.email}
                       </p>
                     )}
+                  </div>
+
+                  {/* Phone Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.phone}
+                    </label>
+                    <div className="relative">
+                      <FiPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
+                          errors.phone
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                            : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        placeholder="+55 67 99999-9999"
+                      />
+                    </div>
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        {errors.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* User Type Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.userType}
+                    </label>
+                    <div className="flex space-x-4">
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="userType"
+                          value="customer"
+                          checked={formData.userType === "customer"}
+                          onChange={handleInputChange}
+                          className="text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="ml-2">{t.customer}</span>
+                      </label>
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="userType"
+                          value="barber"
+                          checked={formData.userType === "barber"}
+                          onChange={handleInputChange}
+                          className="text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="ml-2 flex items-center">
+                          <FiScissors className="mr-1" /> {t.barber}
+                        </span>
+                      </label>
+                    </div>
                   </div>
 
                   {/* Password Input */}
@@ -403,10 +386,11 @@ const LoginScreen = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-12 py-3 rounded-lg border ${errors.password
+                        className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
+                          errors.password
                             ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                             : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
-                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
                         placeholder="••••••••"
                       />
                       <button
@@ -424,34 +408,41 @@ const LoginScreen = () => {
                     )}
                   </div>
 
-                  {/* Remember Me & Forgot Password */}
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="remember"
-                        checked={formData.remember}
-                        onChange={handleInputChange}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                        {t.remember}
-                      </span>
+                  {/* Confirm Password Input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.confirmPassword}
                     </label>
-                    <button
-                      type="button"
-                      className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
-                    >
-                      {t.forgot}
-                    </button>
+                    <div className="relative">
+                      <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        className={`w-full pl-10 pr-12 py-3 rounded-lg border ${
+                          errors.confirmPassword
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                            : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
                   </div>
 
-                    {/* Auth Error Message */}
-                    {authError && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">{authError}</p>
-                    )}
+                  {/* Auth Error Message */}
+                  {authError && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">
+                      {authError}
+                    </p>
+                  )}
 
-                  {/* Submit Button */}
+                  {/* Register Button */}
                   <button
                     type="submit"
                     disabled={isLoading}
@@ -460,52 +451,27 @@ const LoginScreen = () => {
                     {isLoading ? (
                       <div className="flex items-center justify-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Loading...</span>
+                        <span>Creating account...</span>
                       </div>
                     ) : (
-                      t.signin
+                      t.register
                     )}
                   </button>
 
-                  {/* Divider */}
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                        {t.or}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Social Login */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {socialProviders.map((provider) => (
-                      <button
-                        key={provider.name}
-                        type="button"
-                        className={`flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 ${provider.color}`}
-                      >
-                        <provider.icon className="w-5 h-5" />
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Sign Up Link */}
-                  <p onClick={() => navigate('/RegisterScreen.tsx')} className="text-center text-sm text-gray-600 dark:text-gray-400">
-                    {t.noAccount}{" "}
+                  {/* Login Link */}
+                  <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                    {t.haveAccount}{" "}
                     <button
                       type="button"
+                      onClick={() => navigate('/login')}
                       className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
                     >
-                      {t.signup}
+                      {t.login}
                     </button>
                   </p>
-                  
                 </div>
               </div>
-              </form>
+            </form>
           </div>
         </div>
       </div>
@@ -513,4 +479,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
