@@ -14,10 +14,141 @@ import {
   FiScissors
 } from "react-icons/fi";
 // import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { app, db } from "./firebaseConfig";
+import { db } from "../config/firebaseConfig";
 import { useNavigate } from "react-router-dom";
+
+type TranslationKeys =
+  | 'welcome'
+  | 'subtitle'
+  | 'name'
+  | 'email'
+  | 'phone'
+  | 'password'
+  | 'confirmPassword'
+  | 'userType'
+  | 'customer'
+  | 'barber'
+  | 'register'
+  | 'haveAccount'
+  | 'login'
+  | 'nameRequired'
+  | 'emailRequired'
+  | 'phoneRequired'
+  | 'passwordRequired'
+  | 'confirmPasswordRequired'
+  | 'passwordsDontMatch'
+  | 'invalidEmail'
+  | 'invalidPhone'
+  | 'success'
+  | 'error';
+
+type TranslationObject = { [K in TranslationKeys]: string };
+
+const translations: { [lang: string]: Partial<TranslationObject> } = {
+  en: {
+    welcome: "Create Your Account",
+    subtitle: "Set up your account to get started",
+    name: "Full Name",
+    email: "Email Address",
+    phone: "Phone Number",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    userType: "I am a",
+    customer: "Customer",
+    barber: "Barber",
+    register: "Register",
+    haveAccount: "Already have an account?",
+    login: "Login",
+    nameRequired: "Name is required",
+    emailRequired: "Email is required",
+    phoneRequired: "Phone is required",
+    passwordRequired: "Password is required",
+    confirmPasswordRequired: "Please confirm your password",
+    passwordsDontMatch: "Passwords don't match",
+    invalidEmail: "Please enter a valid email",
+    invalidPhone: "Please enter a valid phone number",
+    success: "Account created successfully!",
+    error: "Registration failed. Please try again."
+  },
+  pt: {
+    welcome: "Crie sua conta",
+    subtitle: "Configure sua conta para começar",
+    name: "Nome completo",
+    email: "Endereço de e-mail",
+    phone: "Telefone",
+    password: "Senha",
+    confirmPassword: "Confirme a senha",
+    userType: "Eu sou",
+    customer: "Cliente",
+    barber: "Barbeiro",
+    register: "Cadastrar",
+    haveAccount: "Já tem uma conta?",
+    login: "Entrar",
+    nameRequired: "O nome é obrigatório",
+    emailRequired: "O e-mail é obrigatório",
+    phoneRequired: "O telefone é obrigatório",
+    passwordRequired: "A senha é obrigatória",
+    confirmPasswordRequired: "Por favor, confirme sua senha",
+    passwordsDontMatch: "As senhas não coincidem",
+    invalidEmail: "Por favor, insira um e-mail válido",
+    invalidPhone: "Por favor, insira um telefone válido",
+    success: "Conta criada com sucesso!",
+    error: "Falha no cadastro. Por favor, tente novamente."
+  },
+  es: {
+    welcome: "Crea tu cuenta",
+    subtitle: "Configura tu cuenta para comenzar",
+    name: "Nombre completo",
+    email: "Correo electrónico",
+    phone: "Teléfono",
+    password: "Contraseña",
+    confirmPassword: "Confirmar contraseña",
+    userType: "Soy",
+    customer: "Cliente",
+    barber: "Barbero",
+    register: "Registrarse",
+    haveAccount: "¿Ya tienes una cuenta?",
+    login: "Iniciar sesión",
+    nameRequired: "El nombre es obligatorio",
+    emailRequired: "El correo es obligatorio",
+    phoneRequired: "El teléfono es obligatorio",
+    passwordRequired: "La contraseña es obligatoria",
+    confirmPasswordRequired: "Por favor, confirma tu contraseña",
+    passwordsDontMatch: "Las contraseñas no coinciden",
+    invalidEmail: "Por favor, introduce un correo válido",
+    invalidPhone: "Por favor, introduce un teléfono válido",
+    success: "¡Cuenta creada con éxito!",
+    error: "El registro falló. Por favor, inténtalo de nuevo."
+  },
+  fr: {
+    welcome: "Créez votre compte",
+    subtitle: "Configurez votre compte pour commencer",
+    name: "Nom complet",
+    email: "Adresse e-mail",
+    phone: "Téléphone",
+    password: "Mot de passe",
+    confirmPassword: "Confirmez le mot de passe",
+    userType: "Je suis",
+    customer: "Client",
+    barber: "Barbier",
+    register: "S'inscrire",
+    haveAccount: "Vous avez déjà un compte?",
+    login: "Connexion",
+    nameRequired: "Le nom est requis",
+    emailRequired: "L'e-mail est requis",
+    phoneRequired: "Le téléphone est requis",
+    passwordRequired: "Le mot de passe est requis",
+    confirmPasswordRequired: "Veuillez confirmer votre mot de passe",
+    passwordsDontMatch: "Les mots de passe ne correspondent pas",
+    invalidEmail: "Veuillez saisir un e-mail valide",
+    invalidPhone: "Veuillez saisir un téléphone valide",
+    success: "Compte créé avec succès!",
+    error: "Échec de l'inscription. Veuillez réessayer."
+  },
+};
 
 const RegisterScreen = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
@@ -38,35 +169,9 @@ const RegisterScreen = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Language translations
-  const translations = {
-    en: {
-      welcome: "Create Your Account",
-      subtitle: "Set up your account to get started",
-      name: "Full Name",
-      email: "Email Address",
-      phone: "Phone Number",
-      password: "Password",
-      confirmPassword: "Confirm Password",
-      userType: "I am a",
-      customer: "Customer",
-      barber: "Barber",
-      register: "Register",
-      haveAccount: "Already have an account?",
-      login: "Login",
-      nameRequired: "Name is required",
-      emailRequired: "Email is required",
-      phoneRequired: "Phone is required",
-      passwordRequired: "Password is required",
-      confirmPasswordRequired: "Please confirm your password",
-      passwordsDontMatch: "Passwords don't match",
-      invalidEmail: "Please enter a valid email",
-      invalidPhone: "Please enter a valid phone number",
-      success: "Account created successfully!",
-      error: "Registration failed. Please try again."
-    },
-    // Add other languages similarly...
-  };
+  const t = translations[language as keyof typeof translations] as Partial<TranslationObject>;
+  // fallback for missing translations
+  const tWithFallback = (key: TranslationKeys) => t[key] || translations.en[key] || key;
 
   const languages = [
     { code: "pt", name: "Português", flag: "🇧🇷" },
@@ -74,10 +179,6 @@ const RegisterScreen = () => {
     { code: "es", name: "Español", flag: "🇪🇸" },
     { code: "fr", name: "Français", flag: "🇫🇷" },
   ];
-
-  const t = translations[language as keyof typeof translations] as {
-    [key: string]: string;
-  };
 
   useEffect(() => {
     if (darkMode) {
@@ -90,14 +191,14 @@ const RegisterScreen = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.name.trim()) newErrors.name = t.nameRequired;
-    if (!formData.email) newErrors.email = t.emailRequired;
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = t.invalidEmail;
-    if (!formData.phone) newErrors.phone = t.phoneRequired;
-    if (!formData.password) newErrors.password = t.passwordRequired;
-    if (!formData.confirmPassword) newErrors.confirmPassword = t.confirmPasswordRequired;
+    if (!formData.name.trim()) newErrors.name = tWithFallback('nameRequired');
+    if (!formData.email) newErrors.email = tWithFallback('emailRequired');
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = tWithFallback('invalidEmail');
+    if (!formData.phone) newErrors.phone = tWithFallback('phoneRequired');
+    if (!formData.password) newErrors.password = tWithFallback('passwordRequired');
+    if (!formData.confirmPassword) newErrors.confirmPassword = tWithFallback('confirmPasswordRequired');
     if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = t.passwordsDontMatch;
+      newErrors.confirmPassword = tWithFallback('passwordsDontMatch');
     }
 
     setErrors(newErrors);
@@ -114,7 +215,6 @@ const RegisterScreen = () => {
 
     try {
       // 1. Create auth account
-      const auth = getAuth(app);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         formData.email,
@@ -122,7 +222,7 @@ const RegisterScreen = () => {
       );
 
       // 2. Save user profile to Firestore
-      await setDoc(doc(db, "users", userCredential.user.uid), {
+      await setDoc(doc(db, "login", userCredential.user.uid), {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -131,10 +231,11 @@ const RegisterScreen = () => {
       });
 
       // 3. Redirect based on user type
-      alert(t.success);
+      alert(tWithFallback('success'));
       navigate(formData.userType === "barber" ? "/barber-dashboard" : "/appointments");
     } catch (error: any) {
-      let errorMessage = t.error;
+      console.error(error); // Add this line
+      let errorMessage = tWithFallback('error');
       
       switch (error.code) {
         case "auth/email-already-in-use":
@@ -202,7 +303,7 @@ const RegisterScreen = () => {
 
             {showLanguageMenu && (
               <div className="absolute right-0 mt-2 w-48  shadow-lg dark:border-gray-700 z-20 gap-1">
-                {languages.map((lang) => (
+                {languages.map((lang: { code: string; name: string; flag: string }) => (
                   <button
                     key={lang.code}
                     onClick={() => {
@@ -250,10 +351,10 @@ const RegisterScreen = () => {
                 <FiUser className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {t.welcome}
+                {tWithFallback('welcome')}
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                {t.subtitle}
+                {tWithFallback('subtitle')}
               </p>
             </div>
 
@@ -263,7 +364,7 @@ const RegisterScreen = () => {
                   {/* Name Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t.name}
+                      {tWithFallback('name')}
                     </label>
                     <div className="relative">
                       <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -290,7 +391,7 @@ const RegisterScreen = () => {
                   {/* Email Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t.email}
+                      {tWithFallback('email')}
                     </label>
                     <div className="relative">
                       <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -317,7 +418,7 @@ const RegisterScreen = () => {
                   {/* Phone Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t.phone}
+                      {tWithFallback('phone')}
                     </label>
                     <div className="relative">
                       <FiPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -344,7 +445,7 @@ const RegisterScreen = () => {
                   {/* User Type Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t.userType}
+                      {tWithFallback('userType')}
                     </label>
                     <div className="flex space-x-4">
                       <label className="inline-flex items-center">
@@ -356,7 +457,7 @@ const RegisterScreen = () => {
                           onChange={handleInputChange}
                           className="text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="ml-2">{t.customer}</span>
+                        <span className="ml-2">{tWithFallback('customer')}</span>
                       </label>
                       <label className="inline-flex items-center">
                         <input
@@ -368,7 +469,7 @@ const RegisterScreen = () => {
                           className="text-blue-600 focus:ring-blue-500"
                         />
                         <span className="ml-2 flex items-center">
-                          <FiScissors className="mr-1" /> {t.barber}
+                          <FiScissors className="mr-1" /> {tWithFallback('barber')}
                         </span>
                       </label>
                     </div>
@@ -377,7 +478,7 @@ const RegisterScreen = () => {
                   {/* Password Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t.password}
+                      {tWithFallback('password')}
                     </label>
                     <div className="relative">
                       <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -411,7 +512,7 @@ const RegisterScreen = () => {
                   {/* Confirm Password Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t.confirmPassword}
+                      {tWithFallback('confirmPassword')}
                     </label>
                     <div className="relative">
                       <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -454,19 +555,19 @@ const RegisterScreen = () => {
                         <span>Creating account...</span>
                       </div>
                     ) : (
-                      t.register
+                      tWithFallback('register')
                     )}
                   </button>
 
                   {/* Login Link */}
                   <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                    {t.haveAccount}{" "}
+                    {tWithFallback('haveAccount')}{" "}
                     <button
                       type="button"
                       onClick={() => navigate('/login')}
                       className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
                     >
-                      {t.login}
+                      {tWithFallback('login')}
                     </button>
                   </p>
                 </div>

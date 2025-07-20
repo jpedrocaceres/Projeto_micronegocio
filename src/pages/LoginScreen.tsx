@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiEye,
   FiEyeOff,
@@ -12,10 +13,11 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, type AuthError } from "firebase/auth"; // Import Firebase Auth functions
-import { app } from "./firebaseConfig"; // Import the initialized Firebase app
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, type AuthError } from "firebase/auth"; // Import Firebase Auth functions
+import { auth } from "../config/firebaseConfig";
 
 const LoginScreen = () => {
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt"); // specify possible languages
@@ -34,8 +36,7 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null); // State to hold Firebase Auth errors
 
-  // Initialize Firebase Auth
-  const auth = getAuth(app);
+  // Use imported auth instance
 
   // Language translations
   const translations = {
@@ -122,9 +123,11 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (darkMode) {
+      document.documentElement.classList.remove("light");
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
     }
     document.documentElement.lang = language;
   }, [darkMode, language]);
@@ -158,7 +161,7 @@ const LoginScreen = () => {
     try {
       // Sign in with email and password
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      alert(t.success); // Or navigate to a new page
+      navigate('/dashboard'); // Navigate to dashboard after successful login
     } catch (error) {
       const firebaseError = error as AuthError;
       let errorMessage = t.error; // Default error message
@@ -190,10 +193,8 @@ const LoginScreen = () => {
   const handleSignUp = async () => {
     if (!validateForm()) return;
 
-
     setIsLoading(true);
     setAuthError(null); // Clear previous errors
-
 
     try {
       await createUserWithEmailAndPassword(auth, formData.email, formData.password);
@@ -201,7 +202,6 @@ const LoginScreen = () => {
     } catch (error) {
       const firebaseError = error as AuthError;
       let errorMessage = t.signupError; // Default signup error message
-
 
       switch (firebaseError.code) {
         case "auth/email-already-in-use":
@@ -216,7 +216,6 @@ const LoginScreen = () => {
         default:
           errorMessage = firebaseError.message; // Use Firebase error message for unhandled errors
       }
-
 
       setAuthError(errorMessage);
       alert(errorMessage);
@@ -493,11 +492,13 @@ const LoginScreen = () => {
                   </div>
 
                   {/* Sign Up Link */}
-                  <p onClick={() => navigate('/RegisterScreen.tsx')} className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                     {t.noAccount}{" "}
                     <button
                       type="button"
+                      onClick={() => navigate('/register')}
                       className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
+                      id ="registerButton"
                     >
                       {t.signup}
                     </button>
