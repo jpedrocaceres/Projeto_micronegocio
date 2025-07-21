@@ -1,8 +1,20 @@
 {
   "name": "bizmanager",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "Projeto para melhorar habilidades com desenvolvimento de software.",
+  "homepage": "https://github.com/jpedrocaceres/Projeto_micronegocio#readme",
+  "bugs": {
+    "url": "https://github.com/jpedrocaceres/Projeto_micronegocio/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpedrocaceres/Projeto_micronegocio.git"
+  },
+  "license": "MIT",
+  "author": "jpedro_caceres",
   "type": "module",
+  "main": "eslint.config.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
