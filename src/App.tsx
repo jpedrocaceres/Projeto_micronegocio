@@ -11,14 +11,14 @@ import type { ReactNode, ErrorInfo } from "react";
 
 
 class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError: boolean }> {
-  state = { hasError: false };
-  static getDerivedStateFromError(error: unknown) {
+  state: { hasError: boolean } = { hasError: false };
+  static getDerivedStateFromError(_error: unknown): { hasError: boolean } {
     return { hasError: true };
   }
-  componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
+  componentDidCatch(_error: unknown, _errorInfo: ErrorInfo): void {
     // log error
   }
-  render() {
+  render(): ReactNode {
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
