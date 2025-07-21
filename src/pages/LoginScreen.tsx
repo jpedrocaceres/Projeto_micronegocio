@@ -11,6 +11,8 @@ import {
   FiUser,
   FiChevronDown,
   FiCheck,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
 import { signInWithEmailAndPassword, type AuthError } from "firebase/auth"; // Import Firebase Auth functions
@@ -20,6 +22,7 @@ import validator from "validator";
 const LoginScreen = () => {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt"); // specify possible languages
   const [showLanguageMenu, setShowLanguageMenu] = useState<boolean>(false);
@@ -156,19 +159,15 @@ const LoginScreen = () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setAuthError(null); // Clear previous errors
-
+    setAuthError(null);
 
     try {
-      // Sign in with email and password
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      navigate('/dashboard'); // Navigate to dashboard after successful login
+      navigate('/dashboard');
     } catch (error) {
       const firebaseError = error as AuthError;
-      let errorMessage = t.error; // Default error message
+      let errorMessage = t.error;
 
-
-      // Provide more specific error messages based on Firebase Auth error codes
       switch (firebaseError.code) {
         case "auth/user-not-found":
         case "auth/wrong-password":
@@ -181,7 +180,7 @@ const LoginScreen = () => {
           errorMessage = "Your account has been disabled.";
           break;
         default:
-          errorMessage = firebaseError.message; // Use Firebase error message for unhandled errors
+          errorMessage = firebaseError.message;
       }
       setAuthError(errorMessage);
       alert(errorMessage);
@@ -234,117 +233,129 @@ const LoginScreen = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-4 -left-4 w-72 h-72 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply dark:mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-8 -right-4 w-72 h-72 bg-blue-300 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply dark:mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
-      </div>
-
+    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 ${darkMode ? 'dark' : ''}`}>
       {/* Header */}
-      <div className="relative z-10 flex justify-between items-center p-6">
-        <div className="flex items-center space-x-2">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-            <FiUser className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Platform
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {/* Language Selector */}
-          <div className="relative z-50">
-            <button
-              onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-            >
-              <FiGlobe className="w-4 h-4" />
-              <span className="text-sm">
-                {languages.find((l) => l.code === language)?.flag}
-              </span>
-              <FiChevronDown className="w-4 h-4" />
-            </button>
-
-            {showLanguageMenu && (
-              <div className="absolute right-0 mt-2 w-48  shadow-lg dark:border-gray-700 z-20 gap-1">
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      setLanguage(lang.code as "en" | "es" | "pt" | "fr");
-                      setShowLanguageMenu(false);
-                    }}
-                    className="w-full flex items-center justify-between px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 mt-1"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className="text-lg pb-1">{lang.flag}</span>
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
-                        {lang.name}
-                      </span>
-                    </div>
-                    {language === lang.code && (
-                      <FiCheck className="w-4 h-4 text-blue-600" />
-                    )}
-                  </button>
-                ))}
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            {/* Mobile menu button */}
+            <div className="flex items-center">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+              >
+                {mobileMenuOpen ? (
+                  <FiX className="w-6 h-6" />
+                ) : (
+                  <FiMenu className="w-6 h-6" />
+                )}
+              </button>
+              <div className="flex items-center space-x-2 ml-2 md:ml-0">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <FiUser className="w-4 h-4 text-white" />
+                </div>
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+                  Platform
+                </h1>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-          >
-            {darkMode ? (
-              <FiSun className="w-5 h-5" />
-            ) : (
-              <FiMoon className="w-5 h-5" />
-            )}
-          </button>
+            {/* Header actions */}
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Language Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                  className="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-sm"
+                >
+                  <FiGlobe className="w-4 h-4" />
+                  <span>
+                    {languages.find((l) => l.code === language)?.flag}
+                  </span>
+                  <FiChevronDown className="w-4 h-4" />
+                </button>
+
+                {showLanguageMenu && (
+                  <div className="absolute right-0 mt-2 w-48 shadow-lg bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 z-20">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          setLanguage(lang.code as "en" | "es" | "pt" | "fr");
+                          setShowLanguageMenu(false);
+                        }}
+                        className="w-full flex items-center justify-between px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg pb-1">{lang.flag}</span>
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {lang.name}
+                          </span>
+                        </div>
+                        {language === lang.code && (
+                          <FiCheck className="w-4 h-4 text-blue-600" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+              >
+                {darkMode ? (
+                  <FiSun className="w-4 h-4 sm:w-5 sm:h-5" />
+                ) : (
+                  <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="z-10 flex items-center justify-center min-h-[calc(100vh-120px)] px-4">
+      <div className="flex items-center justify-center min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-64px)] px-4 py-8 sm:py-12">
         <div className="w-full max-w-md">
           {/* Login Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden backdrop-blur-sm bg-opacity-80 dark:bg-opacity-80">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden backdrop-blur-sm bg-opacity-80 dark:bg-opacity-80">
             {/* Header */}
-            <div className="px-8 pt-8 pb-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <FiUser className="w-8 h-8 text-white" />
+            <div className="px-6 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 text-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FiUser className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {t.welcome}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                 {t.subtitle}
               </p>
             </div>
 
-            {/* formulario de envio */}
+            {/* Form */}
             <form onSubmit={handleSubmit}>
-              <div className="px-8 pb-8 relative">
-                <div className="space-y-6">
+              <div className="px-6 pb-8 sm:px-8 sm:pb-10 relative">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Email Input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                       {t.email}
                     </label>
                     <div className="relative">
-                      <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-4 py-3 rounded-lg border ${errors.email
+                        className={`w-full pl-10 pr-4 py-2 sm:py-3 rounded-lg border ${
+                          errors.email
                             ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                             : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
-                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200 text-sm sm:text-base`}
                         placeholder="you@example.com"
                       />
                     </div>
@@ -357,20 +368,21 @@ const LoginScreen = () => {
 
                   {/* Password Input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                       {t.password}
                     </label>
                     <div className="relative">
-                      <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                       <input
                         type={showPassword ? "text" : "password"}
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-12 py-3 rounded-lg border ${errors.password
+                        className={`w-full pl-10 pr-12 py-2 sm:py-3 rounded-lg border ${
+                          errors.password
                             ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                             : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
-                          } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200`}
+                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200 text-sm sm:text-base`}
                         placeholder="••••••••"
                       />
                       <button
@@ -378,7 +390,11 @@ const LoginScreen = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
                       >
-                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                        {showPassword ? (
+                          <FiEyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                        ) : (
+                          <FiEye className="w-4 h-4 sm:w-5 sm:h-5" />
+                        )}
                       </button>
                     </div>
                     {errors.password && (
@@ -410,20 +426,22 @@ const LoginScreen = () => {
                     </button>
                   </div>
 
-                    {/* Auth Error Message */}
-                    {authError && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">{authError}</p>
-                    )}
+                  {/* Auth Error Message */}
+                  {authError && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">
+                      {authError}
+                    </p>
+                  )}
 
                   {/* Submit Button */}
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 sm:py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   >
                     {isLoading ? (
                       <div className="flex items-center justify-center space-x-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Loading...</span>
                       </div>
                     ) : (
@@ -444,14 +462,17 @@ const LoginScreen = () => {
                   </div>
 
                   {/* Social Login */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {socialProviders.map((provider) => (
                       <button
                         key={provider.name}
                         type="button"
-                        className={`flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 ${provider.color}`}
+                        className={`flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 ${provider.color} text-sm sm:text-base`}
                       >
-                        <provider.icon className="w-5 h-5" />
+                        <provider.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="ml-2 hidden sm:inline">
+                          {provider.name}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -463,20 +484,20 @@ const LoginScreen = () => {
                       type="button"
                       onClick={() => navigate('/register')}
                       className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors duration-200"
-                      id ="registerButton"
+                      id="registerButton"
                     >
                       {t.signup}
                     </button>
                   </p>
-                  
                 </div>
               </div>
-              </form>
+            </form>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default LoginScreen;
