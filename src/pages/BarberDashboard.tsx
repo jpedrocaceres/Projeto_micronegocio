@@ -178,7 +178,7 @@ const BarberDashboard = () => {
             </button>
             <button
               onClick={() => {
-                handleNavigation('/profile');
+                handleNavigation('/barber-shop-app');
                 setMobileMenuOpen(false);
               }}
               className="w-full flex items-center space-x-3 py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"

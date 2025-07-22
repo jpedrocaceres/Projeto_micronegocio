@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Appointments from './pages/Appointments';
 import BarberDashboard from './pages/BarberDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import BarberShopApp from './pages/BarberShopApp';
 import './App.css';
 import React from "react";
 import type { ReactNode, ErrorInfo } from "react";
@@ -49,6 +50,11 @@ function App() {
           <Route path="/appointments" element={
             <ProtectedRoute>
               <Appointments />
+            </ProtectedRoute>
+          } />
+          <Route path="/barber-shop-app" element={
+            <ProtectedRoute>
+              <BarberShopApp />
             </ProtectedRoute>
           } />
           
