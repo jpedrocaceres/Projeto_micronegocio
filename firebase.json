@@ -23,11 +23,13 @@
   "apphosting": {
     "backend": {
       "serviceId": "back-end-main",
-      "source": "server.js",
+      "source": ".",
       "runtime": "nodejs18",
       "env": {
-        "PORT": "8080" 
-      }
+        "PORT": "8080",
+        "NODE_ENV": "production"
+      },
+      "timeoutSeconds": 300
     }
   }
 }

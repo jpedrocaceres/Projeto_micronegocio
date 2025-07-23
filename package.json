@@ -17,9 +17,10 @@
   "main": "server.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test-server": "node server.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
