@@ -13,8 +13,8 @@ const BarberDashboard = () => {
   const [todayAppointments] = useState([
     {
       id: 1,
-      customer: "John Smith",
-      service: "Hair Cut & Styling",
+      customer: "Joao Smith",
+      service: "cabelo Cut & Styling",
       time: "10:00 AM",
       duration: "45 min",
       price: "$50",
