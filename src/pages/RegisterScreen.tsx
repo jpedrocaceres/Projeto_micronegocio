@@ -234,19 +234,24 @@ const RegisterScreen = () => {
       // 3. Redirect based on user type
       alert(tWithFallback('success'));
       navigate(formData.userType === "barber" ? "/barber-dashboard" : "/appointments");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error); // Add this line
       let errorMessage = tWithFallback('error');
       
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          errorMessage = "Email already in use";
-          break;
-        case "auth/weak-password":
-          errorMessage = "Password should be at least 6 characters";
-          break;
-        default:
-          errorMessage = error.message;
+      if (typeof error === "object" && error !== null && "code" in error) {
+        const err = error as { code: string; message: string };
+        switch (err.code) {
+          case "auth/email-already-in-use":
+            errorMessage = "Email already in use";
+            break;
+          case "auth/weak-password":
+            errorMessage = "Password should be at least 6 characters";
+            break;
+          default:
+            errorMessage = err.message;
+        }
+      } else {
+        // errorMessage = errorMessage; // Fallback to default error message
       }
       
       setAuthError(errorMessage);

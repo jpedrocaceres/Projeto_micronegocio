@@ -86,9 +86,6 @@ const Appointments = () => {
                   <FiMenu className="w-6 h-6" />
                 )}
               </button>
-              <h1 className="ml-2 md:ml-0 text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-                Appointments
-              </h1>
             </div>
             
             {/* Desktop header actions */}

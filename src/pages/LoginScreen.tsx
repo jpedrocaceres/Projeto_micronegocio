@@ -234,9 +234,9 @@ const LoginScreen = () => {
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 ${darkMode ? 'dark' : ''}`}>
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="px-4 sm:px-6 lg:px-8">
+      {/* Header */}  
+      <header className="w-full mx-auto bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="px-1 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Mobile menu button */}
             <div className="flex items-center">
@@ -250,14 +250,7 @@ const LoginScreen = () => {
                   <FiMenu className="w-6 h-6" />
                 )}
               </button>
-              <div className="flex items-center space-x-2 ml-2 md:ml-0">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <FiUser className="w-4 h-4 text-white" />
-                </div>
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-                  Platform
-                </h1>
-              </div>
+              
             </div>
 
             {/* Header actions */}
@@ -276,7 +269,7 @@ const LoginScreen = () => {
                 </button>
 
                 {showLanguageMenu && (
-                  <div className="absolute right-0 mt-2 w-48 shadow-lg bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 z-20">
+                  <div className="absolute right-0 mt-2 w-48 shadow-lg bg-white dark:bg-gray-800/80 rounded-lg border-gray-200 dark:border-gray-700 z-20">
                     {languages.map((lang) => (
                       <button
                         key={lang.code}
@@ -284,7 +277,7 @@ const LoginScreen = () => {
                           setLanguage(lang.code as "en" | "es" | "pt" | "fr");
                           setShowLanguageMenu(false);
                         }}
-                        className="w-full flex items-center justify-between px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        className="w-full flex items-center justify-between px-4 py-2 mt-1 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 shadow rounded-lg"
                       >
                         <div className="flex items-center space-x-3">
                           <span className="text-lg pb-1">{lang.flag}</span>
@@ -356,7 +349,7 @@ const LoginScreen = () => {
                             ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                             : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800"
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors duration-200 text-sm sm:text-base`}
-                        placeholder="you@example.com"
+                        placeholder="you@example.com" autoComplete="email"
                       />
                     </div>
                     {errors.email && (
