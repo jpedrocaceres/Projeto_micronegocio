@@ -8,16 +8,17 @@ import ProtectedRoute from './components/ProtectedRoute';
 import BarberShopApp from './pages/BarberShopApp';
 import './App.css';
 import React from "react";
-import type { ReactNode, ErrorInfo } from "react";
+import type { ReactNode } from "react";
 
 
 class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError: boolean }> {
   state: { hasError: boolean } = { hasError: false };
-  static getDerivedStateFromError(_error: unknown): { hasError: boolean } {
+  static getDerivedStateFromError(): { hasError: boolean } {
     return { hasError: true };
   }
-  componentDidCatch(_error: unknown, _errorInfo: ErrorInfo): void {
+  componentDidCatch(): void {
     // log error
+    console.error(Error);
   }
   render(): ReactNode {
     if (this.state.hasError) {
