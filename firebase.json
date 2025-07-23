@@ -8,7 +8,7 @@
     ],
     "rewrites": [
       {
-        "source": "/api/**",
+        "source": "src/functions/**",
         "run": {
           "serviceId": "back-end-main",
           "region": "us-central1"
