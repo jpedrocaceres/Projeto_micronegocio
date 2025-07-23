@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist",
+    "public": "src/pages",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -8,47 +8,26 @@
     ],
     "rewrites": [
       {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "back-end-main",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
   },
-  "apphosting": [
-    {
-      "backendId": "back-end-main",
-      "rootDir": "/src",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ],
-      "alwaysDeployFromSource": true
-    },
-    {
-      "backendId": "back-end-main",
-      "rootDir": "index.html",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ],
-      "alwaysDeployFromSource": true
-    },
-    {
-      "backendId": "back-end-main",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ],
-      "alwaysDeployFromSource": true
+  "apphosting": {
+    "backend": {
+      "serviceId": "back-end-main",
+      "source": ".",
+      "runtime": "nodejs18",
+      "env": {
+        "PORT": "8080" 
+      }
     }
-  ]
+  }
 }
