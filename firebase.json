@@ -8,7 +8,7 @@
     ],
     "rewrites": [
       {
-        "source": "src/functions/**",
+        "source": "server.js",
         "run": {
           "serviceId": "back-end-main",
           "region": "us-central1"
@@ -23,7 +23,7 @@
   "apphosting": {
     "backend": {
       "serviceId": "back-end-main",
-      "source": ".",
+      "source": "server.js",
       "runtime": "nodejs18",
       "env": {
         "PORT": "8080" 
