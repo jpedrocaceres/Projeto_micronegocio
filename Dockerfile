@@ -4,6 +4,10 @@ ARG NODE_VERSION=22.16.0
 
 FROM node:${NODE_VERSION}-alpine AS base
 WORKDIR /usr/src
+COPY package*.json ./
+RUN npm install --include=dev vite && npm install
+COPY . .
+RUN npm run build
 
 FROM base AS deps
 RUN --mount=type=bind,source=package.json,target=package.json \
