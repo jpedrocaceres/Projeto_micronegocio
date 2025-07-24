@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "src/pages",
+    "public": "src/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -8,7 +8,7 @@
     ],
     "rewrites": [
       {
-        "source": "server.js",
+        "source": "src/server.js",
         "run": {
           "serviceId": "back-end-main",
           "region": "us-central1"

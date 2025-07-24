@@ -3,7 +3,7 @@
 ARG NODE_VERSION=22.16.0
 
 FROM node:${NODE_VERSION}-alpine AS base
-WORKDIR /usr/src/app
+WORKDIR /usr/src
 
 FROM base AS deps
 RUN --mount=type=bind,source=package.json,target=package.json \
@@ -23,7 +23,14 @@ FROM base AS final
 ENV NODE_ENV=production
 USER node
 COPY package.json .
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
+COPY server.js .
+COPY --from=deps /usr/src/node_modules ./node_modules
+COPY --from=build /usr/src/dist ./dist
+COPY --from=build /usr/src/public ./public
+COPY --from=build /usr/src/src ./src
+COPY --from=build /usr/src/vite.config.ts ./vite.config.ts
+COPY --from=build /usr/src/tsconfig.json ./tsconfig.json
+COPY --from=build /usr/src/tsconfig.node.json ./tsconfig.node.json
+COPY --from=build /usr/src/tsconfig.app.json ./tsconfig.app.json
 EXPOSE 8080
 CMD ["npm", "start"]
