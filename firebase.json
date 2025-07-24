@@ -24,6 +24,10 @@
     "backend": {
       "serviceId": "back-end-main",
       "source": ".",
+      "runConfig": {
+        "cpu": 1,
+        "memoryMiB": 512
+      },
       "runtime": "nodejs18",
       "env": {
         "PORT": "8080",
