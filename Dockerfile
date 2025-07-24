@@ -1,31 +1,39 @@
 # syntax=docker/dockerfile:1
 ARG NODE_VERSION=22.16.0
 
-FROM node:${NODE_VERSION}-alpine
-
+FROM node:${NODE_VERSION}-alpine AS base
 WORKDIR /usr/src
 
-# Copy package files
-COPY package*.json ./
+FROM base AS deps
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci
+FROM base AS build
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci
 
-# Copy source code
 COPY . .
 
-# Build the frontend
+# Debug: Check if vite is available
+RUN echo "=== Checking for Vite ==="
+RUN which vite || echo "Vite not found in PATH"
+RUN ls -la node_modules/.bin/ | grep vite || echo "Vite not in node_modules/.bin"
+RUN cat package.json | grep -A5 -B5 vite || echo "Vite not found in package.json"
+
+# Debug: Try to run build
+RUN echo "=== Attempting build ==="
 RUN npm run build
 
-# Clean up dev dependencies after build (optional - saves space)
-RUN npm prune --production
-
-# Set production environment
+FROM base AS final
 ENV NODE_ENV=production
-
-EXPOSE 8080
-
-# Use non-root user
 USER node
-
+COPY package.json .
+COPY server.js .
+COPY --from=deps /usr/src/node_modules ./node_modules
+COPY --from=build /usr/src/ ./pages
+EXPOSE 8080
 CMD ["node", "server.js"]
