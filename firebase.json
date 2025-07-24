@@ -1,4 +1,10 @@
 {
+  "run": {
+    "source": ".",
+    "env": {
+      "GOOGLE_NODE_RUN_SCRIPTS": ""
+    }
+  },
   "hosting": {
     "public": "src/dist",
     "ignore": [
