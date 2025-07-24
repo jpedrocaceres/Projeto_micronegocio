@@ -29,7 +29,7 @@
         "PORT": "8080",
         "NODE_ENV": "production"
       },
-      "timeoutSeconds": 1000
+      "timeoutSeconds": 30
     }
   }
 }
