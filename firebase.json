@@ -6,12 +6,15 @@
     }
   },
   "hosting": {
-    "public": "src/dist",
+    "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
+    ],"frameworksBackend": {
+      "region": "us-central1",
+      "buildCommand": "npm install --include=dev && npm run build"
+    },
     "rewrites": [
       {
         "source": "src/server.js",
