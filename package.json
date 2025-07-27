@@ -13,10 +13,11 @@
   },
   "license": "MIT",
   "author": "jpedro_caceres",
-  "main": "eslint.config.js",
+  "main": "app/page.tsx",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "set NODE_ENV=production&& next build",
+    "build:ci": "cross-env NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "npm install autoprefixer postcss --no-save"
