@@ -246,7 +246,7 @@ export default function Dashboard() {
                 <span className="text-sm sm:text-base">{t.home}</span>
               </button>
               <button
-                onClick={() => handleNavigation('/appointments')}
+                onClick={() => router.push('/appointments')}
                 className="flex items-center space-x-2 py-3 sm:py-4 px-3 sm:px-1 border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium whitespace-nowrap transition-colors"
               >
                 <FiCalendar className="w-4 h-4" />

@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -7,10 +9,6 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   output: 'standalone',
-}
-const path = require('path');
-
-module.exports = {
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -26,3 +24,5 @@ module.exports = {
     return config;
   }
 };
+
+module.exports = nextConfig;
