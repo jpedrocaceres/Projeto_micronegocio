@@ -17,7 +17,7 @@
   "main": "eslint.config.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && xcopy /E /I /Y dist public",
+    "build": "vite build and xcopy /E /I /Y dist public",
     "preview": "vite preview",
     "start": "node server.js"
   },
