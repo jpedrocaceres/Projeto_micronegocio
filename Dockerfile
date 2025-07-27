@@ -3,37 +3,60 @@
 ARG NODE_VERSION=22.16.0
 
 FROM node:${NODE_VERSION}-alpine AS base
-WORKDIR /usr/src
-COPY package*.json ./
-RUN npm install --include=dev vite && npm install
+
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+# Uncomment the following line in case you want to disable telemetry during the build.
+ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm run build
 
-FROM base AS deps
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
 
-FROM deps AS build
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
-COPY . .
-
-FROM base AS final
 ENV NODE_ENV=production
-USER node
-COPY package.json .
-COPY server.js .
-COPY --from=build /usr/src/node_modules ./node_modules
-COPY --from=build /usr/src/ ./pages
-COPY --from=build /usr/src/public ./public
-COPY --from=build /usr/src/src ./src
-COPY --from=build /usr/src/vite.config.ts ./vite.config.ts
-COPY --from=build /usr/src/tsconfig.json ./tsconfig.json
-COPY --from=build /usr/src/tsconfig.node.json ./tsconfig.node.json
-COPY --from=build /usr/src/tsconfig.app.json ./tsconfig.app.json
-EXPOSE 8080
+# Uncomment the following line in case you want to disable telemetry during runtime.
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+# set hostname to localhost
+ENV HOSTNAME="0.0.0.0"
+
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
 CMD ["node", "server.js"]

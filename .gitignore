@@ -1,3 +1,7 @@
 .env
 node_modules
 eslint.config.js
+src/legacy
+src/config
+src/components
+src/assets

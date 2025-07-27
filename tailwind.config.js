@@ -1,10 +1,14 @@
-export default {
-  darkMode: "class", // Essential for manual dark mode toggling
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
       colors: {
-        // Ensures dark mode variants are available
         primary: {
           DEFAULT: "#3B82F6",
           dark: "#2563EB",
@@ -13,4 +17,5 @@ export default {
     },
   },
   plugins: [],
-};
+  darkMode: 'class',
+}

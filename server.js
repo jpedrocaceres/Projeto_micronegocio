@@ -1,21 +1,27 @@
-// minimal-server.js - Test server
-console.log('Starting minimal server...');
+const express = require('express');
+const next = require('next');
 
-import express from 'express';
+const dev = process.env.NODE_ENV !== 'production';
+const hostname = 'localhost';
+const port = process.env.PORT || 8080;
 
-console.log('Express imported successfully');
+// Prepare the Next.js app
+const app = next({ dev, hostname, port });
+const handle = app.getRequestHandler();
 
-const app = express();
-const PORT = process.env.PORT || 8080;
+app.prepare().then(() => {
+  const server = express();
 
-console.log('Creating basic route...');
+  // Handle all requests with Next.js
+  server.all('*', (req, res) => {
+    return handle(req, res);
+  });
 
-app.get('/', (req, res) => {
-  res.send('Minimal server working');
-});
-
-console.log('Starting server...');
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Minimal server running on port ${PORT}`);
-});
+  server.listen(port, (err) => {
+    if (err) throw err;
+    console.log(`> Ready on http://${hostname}:${port}`);
+  });
+}).catch((ex) => {
+  console.error(ex.stack);
+  process.exit(1);
+}); 
