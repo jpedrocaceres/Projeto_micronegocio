@@ -2,7 +2,7 @@
   "/_not-found/page": "/_not-found",
   "/appointments/page": "/appointments",
   "/dashboard/page": "/dashboard",
-  "/login/page": "/login",
+  "/register/page": "/register",
   "/page": "/",
-  "/register/page": "/register"
+  "/login/page": "/login"
 }
