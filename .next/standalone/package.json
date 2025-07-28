@@ -1,0 +1,52 @@
+{
+  "name": "bizmanager",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Projeto para melhorar habilidades com desenvolvimento de software.",
+  "homepage": "https://github.com/jpedrocaceres/Projeto_micronegocio#readme",
+  "bugs": {
+    "url": "https://github.com/jpedrocaceres/Projeto_micronegocio/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpedrocaceres/Projeto_micronegocio.git"
+  },
+  "license": "MIT",
+  "author": "jpedro_caceres",
+
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "set NODE_ENV=production&& next build",
+    "build:ci": "cross-env NODE_ENV=production next build",
+    "start": "next start",
+        "lint": "next lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@heroicons/react": "^2.2.0",
+    "autoprefixer": "^10.4.17",
+    "express": "^5.1.0",
+    "firebase": "^12.0.0",
+    "next": "^15.4.4",
+    "postcss": "^8.4.38",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
+    "tailwindcss": "^3.4.17",
+    "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/validator": "^13.15.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.35.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
