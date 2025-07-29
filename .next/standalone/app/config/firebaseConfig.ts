@@ -14,7 +14,20 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase only on client side
+// Debug: Log configuration in development
+if (process.env.NODE_ENV === 'development') {
+  console.log('Firebase Config:', {
+    apiKey: firebaseConfig.apiKey ? '***' : 'MISSING',
+    authDomain: firebaseConfig.authDomain || 'MISSING',
+    projectId: firebaseConfig.projectId || 'MISSING',
+    storageBucket: firebaseConfig.storageBucket || 'MISSING',
+    messagingSenderId: firebaseConfig.messagingSenderId || 'MISSING',
+    appId: firebaseConfig.appId || 'MISSING',
+    measurementId: firebaseConfig.measurementId || 'MISSING'
+  });
+}
+
+// Initialize Firebase Client (for browser)
 let app;
 let db;
 let auth;
@@ -31,4 +44,4 @@ if (typeof window !== 'undefined') {
   auth = getAuth(app);
 }
 
-export { app, db, auth };
+export { app, db, auth, firebaseConfig };

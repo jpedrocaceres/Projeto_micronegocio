@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Initialize Firebase only on client side
+// Initialize Firebase Client (for browser)
 let app;
 let db;
 let auth;
@@ -44,4 +44,4 @@ if (typeof window !== 'undefined') {
   auth = getAuth(app);
 }
 
-export { app, db, auth };
+export { app, db, auth, firebaseConfig };

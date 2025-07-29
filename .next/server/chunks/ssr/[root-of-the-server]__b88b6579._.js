@@ -127,7 +127,8 @@ module.exports = mod;
 __turbopack_context__.s({
     "app": ()=>app,
     "auth": ()=>auth,
-    "db": ()=>db
+    "db": ()=>db,
+    "firebaseConfig": ()=>firebaseConfig
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$firebase$2f$app$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/firebase/app/dist/index.mjs [app-ssr] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$firebase$2f$firestore$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/firebase/firestore/dist/index.mjs [app-ssr] (ecmascript) <module evaluation>");
@@ -157,7 +158,7 @@ if ("TURBOPACK compile-time truthy", 1) {
         measurementId: firebaseConfig.measurementId || 'MISSING'
     });
 }
-// Initialize Firebase only on client side
+// Initialize Firebase Client (for browser)
 let app;
 let db;
 let auth;
