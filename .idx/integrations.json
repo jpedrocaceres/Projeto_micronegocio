@@ -1,5 +1,10 @@
 {
   "firebase_hosting": {
     "deploymentHostingUrl": "https://projeto-micronegocio.web.app"
+  },
+  "cloud_run_deploy": {
+    "region": "us-central1",
+    "sourceFlag": "--source .",
+    "allowUnauthenticatedInvocationsFlag": "--no-allow-unauthenticated"
   }
 }

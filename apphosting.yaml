@@ -11,3 +11,13 @@ runConfig:
 env:
   - variable: NODE_ENV
     value: production
+
+  - variable: STORAGE_BUCKET
+    value: projeto-micronegocio.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: PROJECT_ID
+    secret: projeto-micronegocio.firebasestorage.app
+  - variable: AUTH_DOMAIN
+    secret: projeto-micronegocio
