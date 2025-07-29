@@ -161,6 +161,7 @@ const LoginScreen = () => {
 
     setIsLoading(true);
     setAuthError(null);
+    auth(process.env.NEXT_PUBLIC_FIREBASE_API_KEY)
 
     try {
       if (auth) {
