@@ -13,17 +13,17 @@
   },
   "license": "MIT",
   "author": "jpedro_caceres",
-
   "scripts": {
     "dev": "next dev --turbo",
     "build": "set NODE_ENV=production&& next build",
     "build:ci": "cross-env NODE_ENV=production next build",
     "start": "next start",
-        "lint": "next lint"
+    "lint": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@next/env": "^15.4.4",
     "autoprefixer": "^10.4.17",
     "express": "^5.1.0",
     "firebase": "^12.0.0",
