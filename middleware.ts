@@ -2,26 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Get the pathname of the request (e.g. /, /protected)
-  const path = request.nextUrl.pathname
-
-  // Define public paths that don't require authentication
-  const isPublicPath = path === '/login' || path === '/register' || path === '/'
-
-  // Get the token from the request headers
-  const token = request.cookies.get('auth-token')?.value
-
-  // Redirect logic
-  if (isPublicPath && token) {
-    // If user is authenticated and trying to access public path, redirect to dashboard
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  if (!isPublicPath && !token) {
-    // If user is not authenticated and trying to access protected path, redirect to login
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
+  // Temporarily disabled for deployment
   return NextResponse.next()
 }
 

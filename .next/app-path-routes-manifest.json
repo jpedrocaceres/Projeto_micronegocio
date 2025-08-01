@@ -1,9 +1,0 @@
-{
-  "/api/auth/verify/route": "/api/auth/verify",
-  "/_not-found/page": "/_not-found",
-  "/login/page": "/login",
-  "/page": "/",
-  "/dashboard/page": "/dashboard",
-  "/register/page": "/register",
-  "/appointments/page": "/appointments"
-}

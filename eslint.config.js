@@ -1,33 +1,6 @@
 module.exports = {
-  root: true,
-  env: {
-    browser: true,
-    es2021: true,
-    node: true,
-  },
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
-  plugins: [
-    'react',
-    '@typescript-eslint',
-  ],
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
+  extends: ['next/core-web-vitals'],
   rules: {
-    // Customize your rules here
+    // Add any custom rules here
   },
 }; 

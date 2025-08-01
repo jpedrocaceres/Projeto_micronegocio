@@ -1,48 +1,13 @@
 {
-  "run": {
-    "source": ".",
-    "env": {
-      "GOOGLE_NODE_RUN_SCRIPTS": ""
-    }
-  },
   "hosting": {
     "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],"frameworksBackend": {
-      "region": "us-central1",
-      "buildCommand": "npm install --include=dev && npm run build"
-    },
-    "rewrites": [
-      {
-        "source": "src/server.js",
-        "run": {
-          "serviceId": "back-end-main",
-          "region": "us-central1"
-        }
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  },
-  "apphosting": {
-    "backend": {
-      "serviceId": "back-end-main",
-      "source": ".",
-      "runConfig": {
-        "cpu": 1,
-        "memoryMiB": 512
-      },
-      "runtime": "nodejs18",
-      "env": {
-        "PORT": "8080",
-        "NODE_ENV": "production"
-      },
-      "timeoutSeconds": 30
+    ],
+    "frameworksBackend": {
+      "region": "us-central1"
     }
   }
 }

@@ -29,8 +29,8 @@ function formatPrivateKey(key: string | undefined): string | undefined {
 // Firebase Admin configuration for SSR
 const firebaseAdminConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY),
+  clientEmail: process.env.ADMIN_CLIENT_EMAIL || 'placeholder@example.com',
+  privateKey: formatPrivateKey(process.env.ADMIN_PRIVATE_KEY) || 'placeholder',
 };
 
 // Initialize Firebase Admin only on server side
@@ -43,10 +43,10 @@ if (typeof window === 'undefined') {
   try {
     if (!getApps().length) {
       // Validate required fields
-      if (!firebaseAdminConfig.projectId || !firebaseAdminConfig.clientEmail || !firebaseAdminConfig.privateKey) {
+      if (!firebaseAdminConfig.projectId || firebaseAdminConfig.clientEmail === 'placeholder@example.com' || firebaseAdminConfig.privateKey === 'placeholder') {
         console.warn('⚠️ Firebase Admin configuration incomplete. SSR features will be disabled.');
-        console.warn('Required: NEXT_PUBLIC_FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY');
-        console.warn('Note: Replace the placeholder "..." in FIREBASE_PRIVATE_KEY with your actual private key');
+        console.warn('Required: NEXT_PUBLIC_FIREBASE_PROJECT_ID, ADMIN_CLIENT_EMAIL, ADMIN_PRIVATE_KEY');
+        console.warn('Note: Replace the placeholder values with your actual Firebase Admin credentials');
       } else {
         adminApp = initializeApp({
           credential: cert(firebaseAdminConfig),
