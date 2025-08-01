@@ -5,3 +5,4 @@ src/legacy
 src/config
 src/components
 src/assets
+.vercel
