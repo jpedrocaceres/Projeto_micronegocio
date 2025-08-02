@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
+import { createClient } from '@/utils/supabase/client';
 import {
   FiBell,
   FiSettings,
@@ -144,10 +143,9 @@ const Appointments = () => {
 
   const handleLogout = async () => {
     try {
-      if (auth) {
-        await signOut(auth);
-        router.push('/login');
-      }
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);
     }

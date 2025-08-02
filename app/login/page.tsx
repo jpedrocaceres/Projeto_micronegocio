@@ -17,9 +17,8 @@ import {
   FiX,
 } from "react-icons/fi";
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
-import { signInWithEmailAndPassword, type AuthError } from "firebase/auth";
-import { auth } from "../config/firebaseConfig";
 import validator from "validator";
+import { createClient } from '@/utils/supabase/client';
 
 
 const LoginScreen = () => {
@@ -161,35 +160,37 @@ const LoginScreen = () => {
 
     setIsLoading(true);
     setAuthError(null);
-    auth(process.env.NEXT_PUBLIC_FIREBASE_API_KEY)
+
+    const supabase = createClient();
 
     try {
-      if (auth) {
-        await signInWithEmailAndPassword(auth, formData.email, formData.password);
-        router.push('/dashboard');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        let errorMessage = t.error;
+        
+        switch (error.message) {
+          case 'Invalid login credentials':
+            errorMessage = 'Invalid email or password.';
+            break;
+          case 'Email not confirmed':
+            errorMessage = 'Please confirm your email before logging in.';
+            break;
+          default:
+            errorMessage = error.message;
+        }
+        
+        setAuthError(errorMessage);
       } else {
-        throw new Error('Firebase not initialized');
+        // Login successful
+        router.push('/dashboard');
       }
     } catch (error) {
-      const firebaseError = error as AuthError;
-      let errorMessage = t.error;
-
-      switch (firebaseError.code) {
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-          errorMessage = "Invalid email or password.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email format.";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "Your account has been disabled.";
-          break;
-        default:
-          errorMessage = firebaseError.message;
-      }
-      setAuthError(errorMessage);
-      alert(errorMessage);
+      console.error('Login error:', error);
+      setAuthError(t.error);
     } finally {
       setIsLoading(false);
     }

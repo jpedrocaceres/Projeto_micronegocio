@@ -1,9 +1,12 @@
 {
-  "/api/auth/verify/route": "app/api/auth/verify/route.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
+  "/api/user/route": "app/api/user/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/auth/confirm/route": "app/auth/confirm/route.js",
   "/appointments/page": "app/appointments/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
+  "/profile/page": "app/profile/page.js",
   "/register/page": "app/register/page.js"
 }

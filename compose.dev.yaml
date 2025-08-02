@@ -1,0 +1,50 @@
+# Development Docker Compose configuration for Next.js + Supabase project
+# Run with: docker-compose -f compose.dev.yaml up
+
+version: '3.8'
+
+services:
+  # Development web service
+  web-dev:
+    build:
+      context: .
+      target: deps
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  # Optional: Local PostgreSQL for development/testing
+  # Uncomment if you want a local database
+  # db-dev:
+  #   image: postgres:15-alpine
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_DB=bizmanager_dev
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - postgres_dev_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+# volumes:
+#   postgres_dev_data: 

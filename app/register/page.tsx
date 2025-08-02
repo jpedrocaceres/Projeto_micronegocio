@@ -17,9 +17,8 @@ import {
   FiX,
 } from "react-icons/fi";
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
-import { createUserWithEmailAndPassword, type AuthError } from "firebase/auth";
-import { auth } from "../config/firebaseConfig";
 import validator from "validator";
+import { createClient } from '@/utils/supabase/client';
 
 const RegisterScreen = () => {
   const router = useRouter();
@@ -200,32 +199,47 @@ const RegisterScreen = () => {
     setIsLoading(true);
     setAuthError(null);
 
+    const supabase = createClient();
+
     try {
-      if (auth) {
-        await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-        router.push('/dashboard');
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
+      });
+
+      if (error) {
+        let errorMessage = t.error;
+        
+        switch (error.message) {
+          case 'User already registered':
+            errorMessage = 'Email already registered. Please try logging in.';
+            break;
+          case 'Password should be at least 6 characters':
+            errorMessage = 'Password must be at least 6 characters long.';
+            break;
+          default:
+            errorMessage = error.message;
+        }
+        
+        setAuthError(errorMessage);
       } else {
-        throw new Error('Firebase not initialized');
+        // Registration successful
+        if (data.user && !data.user.email_confirmed_at) {
+          // Email confirmation required
+          setAuthError('Please check your email to confirm your account before logging in.');
+        } else {
+          // Auto-login successful
+          router.push('/dashboard');
+        }
       }
     } catch (error) {
-      const firebaseError = error as AuthError;
-      let errorMessage = t.error;
-
-      switch (firebaseError.code) {
-        case "auth/email-already-in-use":
-          errorMessage = "Email already in use.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email format.";
-          break;
-        case "auth/weak-password":
-          errorMessage = "Password is too weak.";
-          break;
-        default:
-          errorMessage = firebaseError.message;
-      }
-      setAuthError(errorMessage);
-      alert(errorMessage);
+      console.error('Registration error:', error);
+      setAuthError(t.error);
     } finally {
       setIsLoading(false);
     }

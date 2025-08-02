@@ -12,48 +12,18 @@ env:
   - variable: NODE_ENV
     value: production
 
-  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-    value: "AIzaSyCRcFaSNYSTTSGVQ0jg7LGQabN7GfPN-rU"
+  - variable: NEXT_PUBLIC_SUPABASE_URL
+    value: "YOUR_SUPABASE_URL"
     availability:
       - BUILD
       - RUNTIME
-  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    value: "projeto-micronegocio.firebaseapp.com"
+  - variable: NEXT_PUBLIC_SUPABASE_ANON_KEY
+    value: "YOUR_SUPABASE_ANON_KEY"
     availability:
       - BUILD
       - RUNTIME
-  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    value: "projeto-micronegocio"
-    availability:
-      - BUILD
-      - RUNTIME
-  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: "projeto-micronegocio.firebasestorage.app"
-    availability:
-      - BUILD
-      - RUNTIME
-  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    value: "1089524937822"
-    availability:
-      - BUILD
-      - RUNTIME
-  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    value: "1:1089524937822:web:6e5c6be3ff400bb13f30cf"
-    availability:
-      - BUILD
-      - RUNTIME
-  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-    value: "G-J8Z5RE4XTD"
-    availability:
-      - BUILD
-      - RUNTIME
-  - variable: ADMIN_CLIENT_EMAIL
-    value: "firebase-adminsdk-xxxxx@projeto-micronegocio.iam.gserviceaccount.com"
-    availability:
-      - BUILD
-      - RUNTIME
-  - variable: ADMIN_PRIVATE_KEY
-    value: "-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----"
+  - variable: SUPABASE_SERVICE_ROLE_KEY
+    value: "YOUR_SUPABASE_SERVICE_ROLE_KEY"
     availability:
       - BUILD
       - RUNTIME

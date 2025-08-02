@@ -1,9 +1,12 @@
 {
-  "/api/auth/verify/route": "/api/auth/verify",
   "/_not-found/page": "/_not-found",
-  "/dashboard/page": "/dashboard",
-  "/login/page": "/login",
-  "/page": "/",
+  "/api/user/route": "/api/user",
+  "/api/health/route": "/api/health",
+  "/auth/confirm/route": "/auth/confirm",
   "/appointments/page": "/appointments",
+  "/dashboard/page": "/dashboard",
+  "/page": "/",
+  "/login/page": "/login",
+  "/profile/page": "/profile",
   "/register/page": "/register"
 }

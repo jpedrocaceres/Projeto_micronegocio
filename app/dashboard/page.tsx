@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
 import { FiHome, FiCalendar, FiUser, FiLogOut, FiSettings, FiBell, FiGlobe, FiCheck, FiChevronDown, FiMoon, FiSun } from 'react-icons/fi';
-import { auth } from '../config/firebaseConfig';
+import { createClient } from '@/utils/supabase/client';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -141,10 +140,9 @@ export default function Dashboard() {
 
     const handleLogout = async () => {
       try {
-        if (auth) {
-          await signOut(auth);
-          router.push('/login');
-        }
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push('/login');
       } catch (error) {
         console.error('Error signing out:', error);
       }
@@ -285,9 +283,9 @@ export default function Dashboard() {
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {t.welcome}
                   </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate text-start">
-                    {auth?.currentUser?.email || 'User'}
-                  </p>
+                                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate text-start">
+                      User
+                    </p>
                 </div>
               </div>
             </div>
@@ -309,7 +307,7 @@ export default function Dashboard() {
                       {t.welcome}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {auth?.currentUser?.email || 'User'}
+                      User
                     </p>
                   </div>
                 </div>
