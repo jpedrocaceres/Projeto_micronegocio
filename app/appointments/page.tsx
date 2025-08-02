@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { useTheme } from '@/components/ThemeProvider';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   FiBell,
   FiSettings,
@@ -18,14 +20,12 @@ import {
   FiGlobe,
   FiChevronDown,
   FiCheck,
-  FiMoon,
-  FiSun,
 } from 'react-icons/fi';
 
-const Appointments = () => {
+const AppointmentsContent = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const { theme } = useTheme();
   const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt");
   const [showLanguageMenu, setShowLanguageMenu] = useState<boolean>(false);
 
@@ -131,15 +131,8 @@ const Appointments = () => {
   };
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.remove("light");
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-    }
     document.documentElement.lang = language;
-  }, [darkMode, language]);
+  }, [language]);
 
   const handleLogout = async () => {
     try {
@@ -182,7 +175,7 @@ const Appointments = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 ${darkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Mobile Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -243,16 +236,7 @@ const Appointments = () => {
               </div>
 
               {/* Dark Mode Toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-              >
-                {darkMode ? (
-                  <FiSun className="w-4 h-4 sm:w-5 sm:h-5" />
-                ) : (
-                  <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />
-                )}
-              </button>
+              <ThemeToggle />
 
               <button className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                 <FiBell className="w-5 h-5" />
@@ -476,6 +460,10 @@ const Appointments = () => {
       </main>
     </div>
   );
+};
+
+const Appointments = () => {
+  return <AppointmentsContent />;
 };
 
 export default Appointments; 

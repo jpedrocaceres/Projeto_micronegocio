@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiHome, FiCalendar, FiUser, FiLogOut, FiSettings, FiBell, FiGlobe, FiCheck, FiChevronDown, FiMoon, FiSun } from 'react-icons/fi';
+import { FiHome, FiCalendar, FiUser, FiLogOut, FiSettings, FiBell, FiGlobe, FiCheck, FiChevronDown } from 'react-icons/fi';
 import { createClient } from '@/utils/supabase/client';
+import { useTheme } from '@/components/ThemeProvider';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
-export default function Dashboard() {
+function DashboardContent() {
   const router = useRouter();
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [language, setLanguage] = useState<'en' | 'es' | 'pt' | 'fr'>('pt');
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const { theme } = useTheme();
   
     const languages = [
       { code: "pt", name: "Português", flag: "🇧🇷" },
@@ -128,15 +130,8 @@ export default function Dashboard() {
         const t = translations[language];
 
     useEffect(() => {
-      if (darkMode) {
-        document.documentElement.classList.remove("light");
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        document.documentElement.classList.add("light");
-      }
       document.documentElement.lang = language;
-    }, [darkMode, language]);
+    }, [language]);
 
     const handleLogout = async () => {
       try {
@@ -196,16 +191,7 @@ export default function Dashboard() {
               </div>
 
               {/* Dark Mode Toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                {darkMode ? (
-                  <FiSun className="w-4 h-4 sm:w-5 sm:h-5" />
-                ) : (
-                  <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />
-                )}
-              </button>
+              <ThemeToggle />
 
               <button className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                 <FiBell className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -439,4 +425,8 @@ export default function Dashboard() {
       </main>
     </div>
   );
+}
+
+export default function Dashboard() {
+  return <DashboardContent />;
 }

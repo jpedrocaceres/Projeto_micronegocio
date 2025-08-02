@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   FiEye,
   FiEyeOff,
-  FiMoon,
-  FiSun,
   FiGlobe,
   FiMail,
   FiLock,
@@ -19,11 +17,13 @@ import {
 import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
 import validator from "validator";
 import { createClient } from '@/utils/supabase/client';
+import { useTheme } from '@/components/ThemeProvider';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 
 const LoginScreen = () => {
   const router = useRouter();
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const { theme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt");
@@ -126,15 +126,8 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.remove("light");
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-    }
     document.documentElement.lang = language;
-  }, [darkMode, language]);
+  }, [language]);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -240,7 +233,7 @@ const LoginScreen = () => {
   ];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 ${darkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}  
       <header className="w-full mx-auto bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="px-1 sm:px-6 lg:px-8">
@@ -302,16 +295,7 @@ const LoginScreen = () => {
               </div>
 
               {/* Dark Mode Toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-              >
-                {darkMode ? (
-                  <FiSun className="w-4 h-4 sm:w-5 sm:h-5" />
-                ) : (
-                  <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />
-                )}
-              </button>
+              <ThemeToggle />
             </div>
           </div>
         </div>
