@@ -1,12 +1,12 @@
 {
   "/_not-found/page": "/_not-found",
   "/api/user/route": "/api/user",
-  "/api/health/route": "/api/health",
   "/auth/confirm/route": "/auth/confirm",
-  "/dashboard/page": "/dashboard",
-  "/profile/page": "/profile",
+  "/api/health/route": "/api/health",
   "/appointments/page": "/appointments",
+  "/dashboard/page": "/dashboard",
   "/login/page": "/login",
+  "/profile/page": "/profile",
   "/page": "/",
   "/register/page": "/register"
 }

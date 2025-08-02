@@ -4,30 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { useTheme } from '@/components/ThemeProvider';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import {
-  FiBell,
-  FiSettings,
-  FiLogOut,
-  FiHome,
-  FiCalendar,
-  FiUser,
-  FiPlus,
-  FiClock,
-  FiMapPin,
-  FiMenu,
-  FiX,
-  FiGlobe,
-  FiChevronDown,
-  FiCheck,
-} from 'react-icons/fi';
+import { AppLayout, type Language } from '@/components';
+import { FiPlus, FiClock, FiMapPin, FiUser, FiCalendar } from 'react-icons/fi';
 
 const AppointmentsContent = () => {
   const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
-  const [language, setLanguage] = useState<"en" | "es" | "pt" | "fr">("pt");
-  const [showLanguageMenu, setShowLanguageMenu] = useState<boolean>(false);
+  const [language, setLanguage] = useState<Language>("pt");
 
   // Mock appointments data
   const [appointments] = useState([
@@ -134,16 +117,6 @@ const AppointmentsContent = () => {
     document.documentElement.lang = language;
   }, [language]);
 
-  const handleLogout = async () => {
-    try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      router.push('/login');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
   const handleNavigation = (path: string) => {
     router.push(path);
   };
@@ -174,164 +147,22 @@ const AppointmentsContent = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Mobile Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Mobile menu button */}
-            <div className="flex items-center">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-              >
-                {mobileMenuOpen ? (
-                  <FiX className="w-6 h-6" />
-                ) : (
-                  <FiMenu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-            
-            {/* Desktop header actions */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Language Selector */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                  className="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-sm"
-                >
-                  <FiGlobe className="w-4 h-4" />
-                  <span>
-                    {languages.find((l) => l.code === language)?.flag}
-                  </span>
-                  <FiChevronDown className="w-4 h-4" />
-                </button>
-
-                {showLanguageMenu && (
-                  <div className="absolute right-0 mt-2 w-48 shadow-lg bg-white dark:bg-gray-800/80 rounded-lg border-gray-200 dark:border-gray-700 z-20">
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => {
-                          setLanguage(lang.code as "en" | "es" | "pt" | "fr");
-                          setShowLanguageMenu(false);
-                        }}
-                        className="w-full flex items-center justify-between px-4 py-2 mt-1 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 shadow rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-lg pb-1">{lang.flag}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {lang.name}
-                          </span>
-                        </div>
-                        {language === lang.code && (
-                          <FiCheck className="w-4 h-4 text-blue-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Dark Mode Toggle */}
-              <ThemeToggle />
-
-              <button className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
-                <FiBell className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
-                <FiSettings className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="hidden sm:flex items-center space-x-2 px-3 lg:px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-              >
-                <FiLogOut className="w-4 h-4" />
-                <span className="hidden lg:inline">{t.logout}</span>
-              </button>
-              {/* Mobile logout */}
-              <button
-                onClick={handleLogout}
-                className="sm:hidden p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-              >
-                <FiLogOut className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Navigation Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg">
-          <div className="px-4 py-2 space-y-1">
-            <button
-              onClick={() => {
-                handleNavigation('/dashboard');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center space-x-3 py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <FiHome className="w-5 h-5" />
-              <span>{t.home}</span>
-            </button>
-            <button
-              onClick={() => {
-                handleNavigation('/appointments');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center space-x-3 py-3 px-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
-            >
-              <FiCalendar className="w-5 h-5" />
-              <span>{t.appointments}</span>
-            </button>
-            <button
-              onClick={() => {
-                handleNavigation('/profile');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center space-x-3 py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
-            >
-              <FiUser className="w-5 h-5" />
-              <span>{t.profile}</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Desktop Navigation */}
-      <nav className="hidden md:block bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            <button
-              onClick={() => handleNavigation('/dashboard')}
-              className="flex items-center space-x-2 py-4 px-1 border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium transition-colors"
-            >
-              <FiHome className="w-4 h-4" />
-              <span>{t.home}</span>
-            </button>
-            <button
-              onClick={() => handleNavigation('/appointments')}
-              className="flex items-center space-x-2 py-4 px-1 border-b-2 border-blue-500 text-blue-600 dark:text-blue-400 font-medium"
-            >
-              <FiCalendar className="w-4 h-4" />
-              <span>{t.appointments}</span>
-            </button>
-            <button
-              onClick={() => handleNavigation('/profile')}
-              className="flex items-center space-x-2 py-4 px-1 border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium transition-colors"
-            >
-              <FiUser className="w-4 h-4" />
-              <span>{t.profile}</span>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+    <AppLayout
+      language={language}
+      onLanguageChange={setLanguage}
+      onLogout={handleLogout}
+    >
         {/* Header with Book Appointment button */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
@@ -457,8 +288,7 @@ const AppointmentsContent = () => {
             ))
           )}
         </div>
-      </main>
-    </div>
+    </AppLayout>
   );
 };
 

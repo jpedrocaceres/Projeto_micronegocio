@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 5, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/jpedr/Documents/Programa%C3%A7%C3%A3o/Projeto_micronegocio/Projeto_micronegocio/app/page.tsx"],"sourcesContent":["'use client'\n\nimport { useEffect } from 'react'\nimport { useRouter } from 'next/navigation'\n\nexport default function Home() {\n  const router = useRouter()\n\n  useEffect(() => {\n    router.push('/login')\n  }, [router])\n\n  return (\n    <div className=\"min-h-screen flex items-center justify-center\">\n      <div className=\"text-center\">\n        <h1 className=\"text-2xl font-bold mb-4\">Carregando...</h1>\n        <div className=\"w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto\"></div>\n      </div>\n    </div>\n  )\n} "],"names":[],"mappings":";;;;AAEA;AACA;AAHA;;;;AAKe,SAAS;IACtB,MAAM,SAAS,CAAA,GAAA,kIAAA,CAAA,YAAS,AAAD;IAEvB,CAAA,GAAA,qMAAA,CAAA,YAAS,AAAD,EAAE;QACR,OAAO,IAAI,CAAC;IACd,GAAG;QAAC;KAAO;IAEX,qBACE,8OAAC;QAAI,WAAU;kBACb,cAAA,8OAAC;YAAI,WAAU;;8BACb,8OAAC;oBAAG,WAAU;8BAA0B;;;;;;8BACxC,8OAAC;oBAAI,WAAU;;;;;;;;;;;;;;;;;AAIvB","debugId":null}}]
+}

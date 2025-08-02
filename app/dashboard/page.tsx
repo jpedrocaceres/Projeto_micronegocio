@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiHome, FiCalendar, FiUser, FiLogOut, FiSettings, FiBell, FiGlobe, FiCheck, FiChevronDown } from 'react-icons/fi';
 import { createClient } from '@/utils/supabase/client';
 import { useTheme } from '@/components/ThemeProvider';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { AppLayout, ThemeToggle, type Language } from '@/components';
+import { FiHome, FiCalendar, FiUser, FiLogOut, FiSettings, FiBell, FiGlobe, FiCheck, FiChevronDown } from 'react-icons/fi';
 
 function DashboardContent() {
   const router = useRouter();
