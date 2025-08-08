@@ -69,6 +69,9 @@ const RegisterScreen = () => {
       agreeRequired: "You must agree to the terms",
       success: "Account created successfully!",
       error: "Failed to create account. Please try again.",
+      emailAlreadyRegistered: "Email already registered. Please try logging in.",
+      passwordTooShort: "Password must be at least 6 characters long.",
+      emailConfirmationRequired: "Please check your email to confirm your account before logging in.",
     },
     es: {
       welcome: "Crear Cuenta",
@@ -91,6 +94,9 @@ const RegisterScreen = () => {
       agreeRequired: "Debes aceptar los términos",
       success: "¡Cuenta creada exitosamente!",
       error: "Error al crear cuenta. Intenta de nuevo.",
+      emailAlreadyRegistered: "Email ya registrado. Por favor intenta iniciar sesión.",
+      passwordTooShort: "La contraseña debe tener al menos 6 caracteres.",
+      emailConfirmationRequired: "Por favor revisa tu email para confirmar tu cuenta antes de iniciar sesión.",
     },
     pt: {
       welcome: "Criar Conta",
@@ -113,6 +119,9 @@ const RegisterScreen = () => {
       agreeRequired: "Você deve concordar com os termos",
       success: "Conta criada com sucesso!",
       error: "Erro ao criar conta. Tente novamente.",
+      emailAlreadyRegistered: "Email já registrado. Por favor tente fazer login.",
+      passwordTooShort: "A senha deve ter pelo menos 6 caracteres.",
+      emailConfirmationRequired: "Por favor verifique seu email para confirmar sua conta antes de fazer login.",
     },
     fr: {
       welcome: "Créer un Compte",
@@ -135,6 +144,9 @@ const RegisterScreen = () => {
       agreeRequired: "Vous devez accepter les termes",
       success: "Compte créé avec succès!",
       error: "Échec de la création du compte. Veuillez réessayer.",
+      emailAlreadyRegistered: "Email déjà enregistré. Veuillez essayer de vous connecter.",
+      passwordTooShort: "Le mot de passe doit contenir au moins 6 caractères.",
+      emailConfirmationRequired: "Veuillez vérifier votre email pour confirmer votre compte avant de vous connecter.",
     },
   };
 
@@ -200,7 +212,7 @@ const RegisterScreen = () => {
         password: formData.password,
         options: {
           data: {
-            name: formData.name,
+            display_name: formData.name,
           },
         },
       });
@@ -210,10 +222,10 @@ const RegisterScreen = () => {
         
         switch (error.message) {
           case 'User already registered':
-            errorMessage = 'Email already registered. Please try logging in.';
+            errorMessage = t.emailAlreadyRegistered;
             break;
           case 'Password should be at least 6 characters':
-            errorMessage = 'Password must be at least 6 characters long.';
+            errorMessage = t.passwordTooShort;
             break;
           default:
             errorMessage = error.message;
@@ -224,7 +236,7 @@ const RegisterScreen = () => {
         // Registration successful
         if (data.user && !data.user.email_confirmed_at) {
           // Email confirmation required
-          setAuthError('Please check your email to confirm your account before logging in.');
+          setAuthError(t.emailConfirmationRequired);
         } else {
           // Auto-login successful
           router.push('/dashboard');
