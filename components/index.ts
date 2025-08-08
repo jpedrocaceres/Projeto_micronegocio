@@ -1,18 +1,13 @@
-// Theme components
-export { ThemeProvider, useTheme } from './ThemeProvider'
-export { ThemeToggle } from './ThemeToggle'
+export { AppLayout } from './AppLayout';
+export { AppHeader } from './AppHeader';
+export { NavigationMenu, defaultNavigationItems } from './NavigationMenu';
+export { ConfigMenu } from './ConfigMenu';
+export { LanguageSelector } from './LanguageSelector';
+export { ThemeToggle } from './ThemeToggle';
+export { default as ThemeSwitcher } from './ThemeSwitcher';
+export { default as ThemeProvider } from './ThemeProvider';
+export { default as AppNavigation } from './AppNavigation';
 
-// Language components
-export { LanguageSelector } from './LanguageSelector'
-export type { Language } from './LanguageSelector'
-
-// Navigation components
-export { NavigationMenu, defaultNavigationItems } from './NavigationMenu'
-export type { NavigationItem } from './NavigationMenu'
-
-// Config components
-export { ConfigMenu } from './ConfigMenu'
-
-// Layout components
-export { AppHeader } from './AppHeader'
-export { AppLayout } from './AppLayout' 
+export type { Language } from './AppLayout';
+export type { NavigationItem } from './NavigationMenu';
+export type { Language as AppNavigationLanguage, NavigationItem as AppNavigationItem } from './AppNavigation'; 

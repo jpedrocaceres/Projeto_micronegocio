@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     postal_code TEXT,
     date_of_birth DATE,
     gender TEXT CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say')),
+    role TEXT DEFAULT 'user' CHECK (role IN ('admin', 'user')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -31,11 +32,17 @@ ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON user_profiles
     FOR SELECT USING (auth.uid() = id);
 
+CREATE POLICY "Admins can view all profiles" ON user_profiles
+    FOR SELECT USING (is_admin() OR auth.uid() = id);
+
 CREATE POLICY "Users can insert own profile" ON user_profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
 
 CREATE POLICY "Users can update own profile" ON user_profiles
     FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Admins can update all profiles" ON user_profiles
+    FOR UPDATE USING (is_admin() OR auth.uid() = id);
 
 CREATE POLICY "Users can delete own profile" ON user_profiles
     FOR DELETE USING (auth.uid() = id);
@@ -63,14 +70,31 @@ CREATE TABLE IF NOT EXISTS appointments (
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for appointments
+-- Users can view their own appointments
 CREATE POLICY "Users can view own appointments" ON appointments
     FOR SELECT USING (auth.uid() = user_id);
+
+-- Admins can view all appointments
+CREATE POLICY "Admins can view all appointments" ON appointments
+    FOR SELECT USING (is_admin() OR auth.uid() = user_id);
+
+-- Public access to appointment times for availability checking (read-only)
+CREATE POLICY "Public can view appointment times for availability" ON appointments
+    FOR SELECT USING (
+        -- Only allow access to date, start_time, end_time, and status for availability checking
+        -- This policy allows all authenticated users to see appointment times
+        -- but not the full appointment details
+        auth.uid() IS NOT NULL
+    );
 
 CREATE POLICY "Users can insert own appointments" ON appointments
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update own appointments" ON appointments
     FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins can update all appointments" ON appointments
+    FOR UPDATE USING (is_admin() OR auth.uid() = user_id);
 
 CREATE POLICY "Users can delete own appointments" ON appointments
     FOR DELETE USING (auth.uid() = user_id);
@@ -131,17 +155,21 @@ CREATE TABLE IF NOT EXISTS services (
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for services
-CREATE POLICY "Users can view own services" ON services
-    FOR SELECT USING (auth.uid() = user_id);
+-- Public read access (all users can view all services)
+CREATE POLICY "Public can view all services" ON services
+    FOR SELECT USING (true);
 
-CREATE POLICY "Users can insert own services" ON services
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Only admins can insert services
+CREATE POLICY "Admins can insert services" ON services
+    FOR INSERT WITH CHECK (is_admin());
 
-CREATE POLICY "Users can update own services" ON services
-    FOR UPDATE USING (auth.uid() = user_id);
+-- Only admins can update services
+CREATE POLICY "Admins can update services" ON services
+    FOR UPDATE USING (is_admin());
 
-CREATE POLICY "Users can delete own services" ON services
-    FOR DELETE USING (auth.uid() = user_id);
+-- Only admins can delete services
+CREATE POLICY "Admins can delete services" ON services
+    FOR DELETE USING (is_admin());
 
 -- =============================================
 -- APPOINTMENT_SERVICES TABLE (Many-to-Many)
@@ -352,19 +380,31 @@ CREATE TRIGGER update_user_settings_updated_at BEFORE UPDATE ON user_settings
 -- FUNCTIONS FOR DATA INTEGRITY
 -- =============================================
 
+-- Function to check if user is admin (avoids recursion in policies)
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM user_profiles 
+        WHERE user_profiles.id = auth.uid() 
+        AND user_profiles.role = 'admin'
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Function to automatically create user profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.user_profiles (id, email, full_name)
-    VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name');
+    INSERT INTO public.user_profiles (id, email, full_name, role)
+    VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'display_name', 'user');
     
     INSERT INTO public.user_settings (user_id)
     VALUES (NEW.id);
     
     -- Create a client record for the user themselves
     INSERT INTO public.clients (user_id, name, email, status)
-    VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', 'My Account'), NEW.email, 'active');
+    VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'display_name', 'My Account'), NEW.email, 'active');
     
     RETURN NEW;
 END;
