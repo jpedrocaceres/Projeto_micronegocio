@@ -175,7 +175,7 @@
       "esmExternals": true,
       "fullySpecified": false,
       "swcTraceProfiling": false,
-      "forceSwcTransforms": false,
+      "forceSwcTransforms": true,
       "largePageDataBytes": 128000,
       "typedRoutes": false,
       "typedEnv": false,
